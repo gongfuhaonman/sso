@@ -24,21 +24,11 @@ public class LogoutController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("这里是cas的logout");
 		HttpSession session=request.getSession();
 		session.invalidate();
-		Cookie cookies[] = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				System.out.println(cookie.getName());
-				if (cookie.getName().equals(Constants.CAS_TGS)) {
-					String CAS_TGS = cookie.getValue();
-					String CAS_ST = CAS_TGS;
-					cookie.setMaxAge(0);
-					
-					response.addCookie(cookie);
-					List<SessionStorage> list =DB.findSessionStorage(CAS_ST);
-							
+		String token = request.getParameter("TOKEN");
+		if (token != null) {
+			List<SessionStorage> list =DB.findSessionStorage(token);							
 					try {
 						for (SessionStorage item : list) {
 							URL url = new URL(item.getLocalService()
@@ -48,17 +38,16 @@ public class LogoutController extends HttpServlet {
 									new InputStreamReader(url.openStream()));
 							reader.readLine();
 							reader.close();
-							System.out.println(url.toString());
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 
 					}
-					DB.deleteSessionStorage(CAS_ST);
-					DB.deleteServiceTicket(CAS_ST);
-				}
+					DB.deleteSessionStorage(token);
+					DB.deleteServiceTicket(token);
+				
 			}
-		}
+		
 		response.sendRedirect(request.getContextPath()+"/login.do");
 	}
 

@@ -44,7 +44,6 @@ public class aFilter implements Filter {
 		if(logout!=null)
 		{
 			String sessionId=httpRequest.getParameter("sessionId");
-			System.out.println("");
 			SessionMap.invalidate(sessionId);
 		}else{
 			chain.doFilter(request, response);

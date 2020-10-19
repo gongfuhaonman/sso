@@ -21,14 +21,14 @@ import domains.User;
 /**
  * Servlet Filter implementation class LocalLoginFilter
  */
-@WebFilter(filterName="F3",urlPatterns="/*")
-public class LocalLoginFilter extends AbstractLocalLoginFilter implements
+//@WebFilter(filterName="F3",urlPatterns="/*")
+public class cFilter extends AbstractLocalLoginFilter implements
 		Filter {
 
 	/**
 	 * @see AbstractLocalLoginFilter#AbstractLocalLoginFilter()
 	 */
-	public LocalLoginFilter() {
+	public cFilter() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

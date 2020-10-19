@@ -18,8 +18,9 @@ public class UserController extends HttpServlet  {
 		String uri=request.getRequestURI();
 		if(uri.endsWith("/view.do"))
 		{
+			System.out.println(request.getRequestURL().toString());
 			request.getRequestDispatcher("/WEB-INF/jsp/view.jsp").forward(request, response);
-			System.out.println("/WEB-INF/jsp/view.jsp");
+			
 		}else if(uri.endsWith("/logout.do"))
 		{
 			HttpSession session=request.getSession();

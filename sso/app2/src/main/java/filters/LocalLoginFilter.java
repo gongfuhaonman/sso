@@ -21,7 +21,7 @@ import domains.User;
 /**
  * Servlet Filter implementation class LocalLoginFilter
  */
-@WebFilter(filterName="F3",urlPatterns="/*")
+//@WebFilter(filterName="F3",urlPatterns="/*")
 public class LocalLoginFilter extends AbstractLocalLoginFilter implements
 		Filter {
 

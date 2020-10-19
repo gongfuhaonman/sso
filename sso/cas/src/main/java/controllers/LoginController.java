@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,6 +41,7 @@ public class LoginController extends HttpServlet {
 				}
 			}
 		}
+		//CAS—Server检测到请求信息中没有TGC，所以跳转到自己的登录页；
 		request.setAttribute(Constants.LOCAL_SERVICE, LOCAL_SERVICE);
 		request.getRequestDispatcher("/WEB-INF/jsp/login.jsp").forward(request, response);
 	}
@@ -52,20 +54,12 @@ public class LoginController extends HttpServlet {
 		User user =DB.findUser(id,pwd);
 		HttpSession session=request.getSession();
 		if (user != null) {
-			System.out.printf("id:%s",session.getId());
-			session.setAttribute("user", user);
-			String CAS_ST = user.getId() + System.nanoTime();
-			// 为简化设计TGS=ST
-			Cookie cookie = new Cookie(Constants.CAS_TGS, CAS_ST);
-			//原为-1
-			cookie.setMaxAge(-1);
-			response.addCookie(cookie);
-			System.out.println(cookie.getName());
-			DB.addServiceTicket(user,CAS_ST);
-			
+			session.setAttribute("isLogin", true);
+			String token=UUID.randomUUID().toString();
+			DB.addServiceTicket(user,token);
 			if (LOCAL_SERVICE != null && !LOCAL_SERVICE.equals("")) {
 				response.sendRedirect(LOCAL_SERVICE + "?"
-						+ Constants.CAS_ST + "=" + CAS_ST + "&"
+						+ Constants.TOKEN + "=" + token+ "&"
 						+ Constants.LOCAL_SERVICE + "=" + LOCAL_SERVICE);
 			} else
 				response.sendRedirect(request.getContextPath()+"/main.do");

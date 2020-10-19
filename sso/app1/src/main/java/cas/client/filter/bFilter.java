@@ -1,5 +1,4 @@
 package cas.client.filter;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,13 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import cas.client.Constants;
+import database.DB;
+import domains.User;
 
 /**
  * Servlet Filter implementation class SingleSignOnFilter
  */
 @WebFilter(filterName="F2",urlPatterns="/*")
 public class bFilter implements Filter {
-	private String CAS_LOGIN_URL="http://localhost:8080/cas/login.do";
+	private String CAS_LOGIN_URL="http://localhost:8080/cas/login.do";//穿衣服走人了麦乐鸡腿堡和炸鸡腿还有麦旋风你只需要
 	private String CAS_USER_URL="http://localhost:8080/cas/getUser.do";
 
 	/**
@@ -43,44 +44,45 @@ public class bFilter implements Filter {
 	/**
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
+	/*
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
+		System.out.println("F2");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		HttpSession session = httpRequest.getSession();
-		String CAS_ST = httpRequest.getParameter(Constants.CAS_ST);
-		System.out.println("F2");
+		String CAS_ST=request.getParameter(Constants.CAS_ST);
 		if (CAS_ST != null) {
 			// CAS返回ST
-			System.out.println("CAS_ST != null");
 			session.setAttribute(Constants.LOCAL_ST, CAS_ST);
 			String LOCAL_SERVICE = httpRequest
 					.getParameter(Constants.LOCAL_SERVICE);
+			
+			
 			if (LOCAL_SERVICE != null && !LOCAL_SERVICE.equals("")) {
-				System.out.println("LOCAL_SERVICE != null");
-				System.out.println(LOCAL_SERVICE);
+				System.out.printf("LOCAL_SERVICE=%s\n",LOCAL_SERVICE);
 				httpResponse.sendRedirect(LOCAL_SERVICE);
 			}
-			else
+				
+			else {
+				System.out.printf("ContextPath()=%s\n",httpRequest.getContextPath().toString());
 				httpResponse.sendRedirect(httpRequest.getContextPath());
+			}
+				
 			return;
 		} else {
-			System.out.println("CAS_ST == null");
 			String LOCAL_ST = (String) session.getAttribute(Constants.LOCAL_ST);
 			if (LOCAL_ST == null) {
 				// 跳转到CAS登录
-				System.out.println("LOCAL_ST == null");
-				
+				System.out.printf("LOCAL_ST == null,跳转到cas登录");
 				httpResponse.sendRedirect(CAS_LOGIN_URL + "?"
 						+ Constants.LOCAL_SERVICE + "="
 						+ httpRequest.getRequestURL());
 			} else {
-				System.out.println("LOCAL_ST != null");
 				String LOCAL_USER_ID = (String) session
 						.getAttribute(Constants.LOCAL_USER_ID);
 				if (LOCAL_USER_ID == null) {
 					// 获取LOCAL_USER_ID
-					System.out.println("LOCAL_USER_ID == null");
 					try {
 						URL url = new URL(CAS_USER_URL + "?" + Constants.CAS_ST
 								+ "=" + LOCAL_ST + "&host="
@@ -109,9 +111,75 @@ public class bFilter implements Filter {
 
 			}
 		}
-
 	}
-
+	*/
+	
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
+		System.out.println("F2");
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		HttpSession session = httpRequest.getSession();
+		String LOCAL_USER_ID = (String) session
+				.getAttribute(Constants.LOCAL_USER_ID);
+		if(LOCAL_USER_ID==null) {
+			//检测本地Session没有缓存有用户信息
+			System.out.println("LOCAL_USER_ID==null");
+			String CAS_ST = httpRequest.getParameter(Constants.CAS_ST);
+			if(CAS_ST==null) {
+				System.out.println("CAS_ST==null");
+				//检测到请求信息中没有ST
+				//将请求重定向到CAS—Server，并传递 LOCAL_Service
+				httpResponse.sendRedirect(CAS_LOGIN_URL + "?"
+						+ Constants.LOCAL_SERVICE + "="
+						+ httpRequest.getRequestURL());
+				
+			}else {
+				System.out.println("CAS_ST!=null");
+				//ST不为空,检验ST并转发
+				//利用httpclient工具访问cas 服务的/serviceValidate 接口,
+				//将st 、service 都传到此接口，由此接口验证ticket 的有效性，
+				
+					// 获取LOCAL_USER_ID
+					try {
+						URL url = new URL(CAS_USER_URL + "?" + Constants.CAS_ST
+								+ "=" + CAS_ST + "&host="
+								+ httpRequest.getServerName() + "&app="
+								+ httpRequest.getContextPath() + "&"
+								+ Constants.LOCAL_SERVICE + "="
+								+ httpRequest.getRequestURL() + "&sessionId="
+								+ session.getId());
+						System.out.println(url);
+						BufferedReader reader = new BufferedReader(
+								new InputStreamReader(url.openStream()));
+						LOCAL_USER_ID = reader.readLine();
+						//System.out.printf("读取到的LOCAL_USER_ID是%s",LOCAL_USER_ID);
+						reader.close();
+						session.setAttribute(Constants.LOCAL_USER_ID,
+								LOCAL_USER_ID);
+						User user=DB.getUser(LOCAL_USER_ID);
+						session.setAttribute("user", user);
+						String LOCAL_SERVICE=httpRequest.getRequestURL().toString();
+						httpResponse.sendRedirect(LOCAL_SERVICE);
+					} catch (Exception e) {
+						e.printStackTrace();
+						// 跳转到CAS登录
+						httpResponse.sendRedirect(CAS_LOGIN_URL + "?"
+								+ Constants.LOCAL_SERVICE + "="
+								+ httpRequest.getRequestURL());
+					}
+					//sendRedirect需要处理完成整个页面才会跳转，所以此处不能加chain.dofilter
+					//chain.doFilter(request, response);
+			}
+		}else {
+			//LOCAL_USER_ID!=null正常访问
+			System.out.println("LOCAL_USER_ID!=null正常访问");
+			chain.doFilter(request, response);
+		}
+			
+			
+		
+	}
 	/**
 	 * @see Filter#init(FilterConfig)
 	 */
