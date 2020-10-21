@@ -3,14 +3,14 @@ package domains;
 import java.sql.Timestamp;
 
 public class ServiceTicket {
-	private String st;
+	private String CAS_TGC;
 	private User user;
 	private Timestamp created=new Timestamp(System.currentTimeMillis());
-	public String getSt() {
-		return st;
+	public String getTGC() {
+		return CAS_TGC;
 	}
-	public void setSt(String st) {
-		this.st = st;
+	public void setTGC(String CAS_TGC) {
+		this.CAS_TGC = CAS_TGC;
 	}
 
 	public User getUser() {
@@ -29,7 +29,7 @@ public class ServiceTicket {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((st == null) ? 0 : st.hashCode());
+		result = prime * result + ((CAS_TGC == null) ? 0 : CAS_TGC.hashCode());
 		return result;
 	}
 	@Override
@@ -41,12 +41,13 @@ public class ServiceTicket {
 		if (getClass() != obj.getClass())
 			return false;
 		ServiceTicket other = (ServiceTicket) obj;
-		if (st == null) {
-			if (other.st != null)
+		if (CAS_TGC== null) {
+			if (other.CAS_TGC != null)
 				return false;
-		} else if (!st.equals(other.st))
+		} else if (!CAS_TGC.equals(other.CAS_TGC))
 			return false;
 		return true;
 	}
 	
 }
+

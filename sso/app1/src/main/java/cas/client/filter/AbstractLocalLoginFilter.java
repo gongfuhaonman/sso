@@ -38,7 +38,6 @@ abstract public class AbstractLocalLoginFilter implements Filter {
 	final public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpSession session=((HttpServletRequest)request).getSession();
 		Boolean CAS_LOGIN=(Boolean) session.getAttribute(Constants.LOCAL_LOGINED);
-		System.out.println("AbstractLocalLoginFilter");
 		if(CAS_LOGIN!=null&&CAS_LOGIN)
 			chain.doFilter(request, response);
 		else

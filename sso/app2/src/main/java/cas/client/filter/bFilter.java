@@ -1,4 +1,5 @@
 package cas.client.filter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,7 +25,7 @@ import domains.User;
  */
 @WebFilter(filterName="F2",urlPatterns="/*")
 public class bFilter implements Filter {
-	private String CAS_LOGIN_URL="http://localhost:8080/cas/login.do";//穿衣服走人了麦乐鸡腿堡和炸鸡腿还有麦旋风你只需要
+	private String CAS_LOGIN_URL="http://localhost:8080/cas/login.do";
 	private String CAS_USER_URL="http://localhost:8080/cas/getUser.do";
 
 	/**
@@ -53,24 +54,24 @@ public class bFilter implements Filter {
 		String LOCAL_USER_ID = (String) session
 				.getAttribute(Constants.LOCAL_USER_ID);
 		if(LOCAL_USER_ID==null) {
-			//检测本地Session没有缓存有用户信息
+			//妫�娴嬫湰鍦癝ession娌℃湁缂撳瓨鏈夌敤鎴蜂俊鎭�
 			System.out.println("LOCAL_USER_ID==null");
 			String CAS_ST = httpRequest.getParameter(Constants.CAS_ST);
 			if(CAS_ST==null) {
 				System.out.println("CAS_ST==null");
-				//检测到请求信息中没有ST
-				//将请求重定向到CAS—Server，并传递 LOCAL_Service
+				//妫�娴嬪埌璇锋眰淇℃伅涓病鏈塖T
+				//灏嗚姹傞噸瀹氬悜鍒癈AS鈥擲erver锛屽苟浼犻�� LOCAL_Service
 				httpResponse.sendRedirect(CAS_LOGIN_URL + "?"
 						+ Constants.LOCAL_SERVICE + "="
 						+ httpRequest.getRequestURL());
 				
 			}else {
 				System.out.println("CAS_ST!=null");
-				//ST不为空,检验ST并转发
-				//利用httpclient工具访问cas 服务的/serviceValidate 接口,
-				//将st 、service 都传到此接口，由此接口验证ticket 的有效性，
+				//ST涓嶄负绌�,妫�楠孲T骞惰浆鍙�
+				//鍒╃敤httpclient宸ュ叿璁块棶cas 鏈嶅姟鐨�/serviceValidate 鎺ュ彛,
+				//灏唖t 銆乻ervice 閮戒紶鍒版鎺ュ彛锛岀敱姝ゆ帴鍙ｉ獙璇乼icket 鐨勬湁鏁堟�э紝
 				
-					// 获取LOCAL_USER_ID
+					// 鑾峰彇LOCAL_USER_ID
 					try {
 						URL url = new URL(CAS_USER_URL + "?" + Constants.CAS_ST
 								+ "=" + CAS_ST + "&host="
@@ -83,7 +84,7 @@ public class bFilter implements Filter {
 						BufferedReader reader = new BufferedReader(
 								new InputStreamReader(url.openStream()));
 						LOCAL_USER_ID = reader.readLine();
-						//System.out.printf("读取到的LOCAL_USER_ID是%s",LOCAL_USER_ID);
+						//System.out.printf("璇诲彇鍒扮殑LOCAL_USER_ID鏄�%s",LOCAL_USER_ID);
 						reader.close();
 						session.setAttribute(Constants.LOCAL_USER_ID,
 								LOCAL_USER_ID);
@@ -93,26 +94,23 @@ public class bFilter implements Filter {
 						httpResponse.sendRedirect(LOCAL_SERVICE);
 					} catch (Exception e) {
 						e.printStackTrace();
-						// 跳转到CAS登录
+						// 璺宠浆鍒癈AS鐧诲綍
 						httpResponse.sendRedirect(CAS_LOGIN_URL + "?"
 								+ Constants.LOCAL_SERVICE + "="
 								+ httpRequest.getRequestURL());
 					}
-				
+					//sendRedirect闇�瑕佸鐞嗗畬鎴愭暣涓〉闈㈡墠浼氳烦杞紝鎵�浠ユ澶勪笉鑳藉姞chain.dofilter
 					//chain.doFilter(request, response);
 			}
 		}else {
-			//LOCAL_USER_ID!=null正常访问
+			//LOCAL_USER_ID!=null姝ｅ父璁块棶
+			System.out.println("LOCAL_USER_ID!=null姝ｅ父璁块棶");
 			chain.doFilter(request, response);
 		}
 			
 			
 		
 	}
-	
-	
-
-
 	/**
 	 * @see Filter#init(FilterConfig)
 	 */

@@ -26,9 +26,15 @@ public class LogoutController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session=request.getSession();
 		session.invalidate();
-		String token = request.getParameter("TOKEN");
-		if (token != null) {
-			List<SessionStorage> list =DB.findSessionStorage(token);							
+		Cookie cookies[] = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(Constants.CAS_TGC)) {
+					String CAS_TGC = cookie.getValue();
+					cookie.setMaxAge(0);
+					response.addCookie(cookie);
+					List<SessionStorage> list =DB.findSessionStorage(CAS_TGC);
+							
 					try {
 						for (SessionStorage item : list) {
 							URL url = new URL(item.getLocalService()
@@ -43,11 +49,11 @@ public class LogoutController extends HttpServlet {
 						e.printStackTrace();
 
 					}
-					DB.deleteSessionStorage(token);
-					DB.deleteServiceTicket(token);
-				
+					DB.deleteSessionStorage(CAS_TGC);
+					DB.deleteServiceTicket(CAS_TGC);
+				}
 			}
-		
+		}
 		response.sendRedirect(request.getContextPath()+"/login.do");
 	}
 

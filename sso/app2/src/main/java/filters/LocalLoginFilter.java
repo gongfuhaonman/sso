@@ -61,7 +61,6 @@ public class LocalLoginFilter extends AbstractLocalLoginFilter implements
 	@Override
 	protected boolean doLogin(HttpServletRequest request,
 			HttpServletResponse response) {
-		System.out.println("F3");
 		try {
 			HttpSession session = request.getSession();
 			String userId = (String) session

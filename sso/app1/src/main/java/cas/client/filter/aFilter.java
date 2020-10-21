@@ -39,7 +39,6 @@ public class aFilter implements Filter {
 		HttpServletRequest httpRequest=(HttpServletRequest)request;
 		//HttpServletResponse httpResponse=(HttpServletResponse)response;
 		//HttpSession session=httpRequest.getSession();
-		System.out.println("F1");
 		String logout=httpRequest.getParameter("logout");
 		if(logout!=null)
 		{

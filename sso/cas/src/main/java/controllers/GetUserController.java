@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import database.DB;
 import domains.Mapping;
 import domains.ServiceTicket;
+import domains.User;
 @WebServlet(value="/getUser.do")
 public class GetUserController extends HttpServlet {
 
@@ -23,9 +24,13 @@ public class GetUserController extends HttpServlet {
 		String app=request.getParameter("app");
 		String LOCAL_SERVICE=request.getParameter("LOCAL_SERVICE");
 		String sessionId=request.getParameter("sessionId");
-		DB.addSessionStorage(LOCAL_SERVICE,CAS_ST,sessionId);
-		ServiceTicket st = DB.findServiceTicketbySt(CAS_ST);
-		Mapping mapping = DB.findMappingByHostAndAppAndCasUser(host,app,st.getUser());
+		String CAS_TGC=DB.getTGTByST(CAS_ST).getTGC();
+		DB.addSessionStorage(LOCAL_SERVICE,CAS_TGC,sessionId);
+		//ServiceTicket st = DB.findServiceTicketbySt(CAS_ST);
+		User user=DB.getTGTByST(CAS_ST).getUser();
+		Mapping mapping = DB.findMappingByHostAndAppAndCasUser(host,app,user);
+		//娓呯┖st,涓�涓猻t鍙兘浣跨敤涓�娆�
+		DB.deleteTGTBySt(CAS_ST);
 		response.getWriter().println(mapping.getLocalUser());
 	}
 

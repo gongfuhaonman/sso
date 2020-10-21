@@ -1,6 +1,7 @@
 package database;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 import domains.Mapping;
 import domains.ServiceTicket;
 import domains.SessionStorage;
+import domains.TGT;
 import domains.User;
 
 public class DB {
@@ -15,6 +17,7 @@ public class DB {
 	private static Set<User> users = new HashSet<>();
 	private static Set<SessionStorage> sessionStorages = new HashSet<>();
 	private static Set<Mapping> mappings = new HashSet<>();
+	private static Set<TGT> tgts = new HashSet<>();
 	static {
 		User u1=addUser("01", "0");
 		User u2=addUser("02", "0");
@@ -32,11 +35,14 @@ public class DB {
 		users.add(u);
 		return u;
 	}
+	//getTGCbyst,getTGTbyst
 
-	public static ServiceTicket findServiceTicketbySt(String st) {
+
+	
+	public static User getUserByTGC(String TGC) {
 		for (ServiceTicket s : serviceTickets) {
-			if (s.getSt().equals(st)) {
-				return s;
+			if (s.getTGC().equals(TGC)) {
+				return s.getUser();
 			}
 		}
 		return null;
@@ -51,17 +57,17 @@ public class DB {
 		return null;
 	}
 
-	public static void addServiceTicket(User user, String st) {
+	public static void addServiceTicket(String CAS_TGC,User user ) {
 		ServiceTicket serviceTicket = new ServiceTicket();
+		serviceTicket.setTGC(CAS_TGC);
 		serviceTicket.setUser(user);
-		serviceTicket.setSt(st);
 		serviceTickets.add(serviceTicket);
 	}
-
-	public static void addSessionStorage(String LOCAL_SERVICE, String CAS_ST, String sessionId) {
+	//tgc瀵瑰簲涓績浼氳瘽Id,sessionid涓篴pp浼氳瘽id
+	public static void addSessionStorage(String LOCAL_SERVICE, String CAS_TGC, String sessionId) {
 		SessionStorage sessionStorage = new SessionStorage();
 		sessionStorage.setLocalService(LOCAL_SERVICE);
-		sessionStorage.setSt(CAS_ST);
+		sessionStorage.setTGC(CAS_TGC);
 		sessionStorage.setSessionId(sessionId);
 		sessionStorages.add(sessionStorage);
 
@@ -87,33 +93,66 @@ public class DB {
 		return null;
 	}
 
-	public static List<SessionStorage> findSessionStorage(String CAS_ST) {
+	public static List<SessionStorage> findSessionStorage(String CAS_TGC) {
 		List<SessionStorage> list = new ArrayList<>();
+		System.out.println(list!=null);
 		for (SessionStorage s : sessionStorages) {
-			if (s.getSt().equals(CAS_ST)) {
+			System.out.println(s.getTGC());
+			if (s.getTGC().equals(CAS_TGC)) {
 				list.add(s);
 			}
 		}
 		return list;
 	}
 
-	public static void deleteSessionStorage(String CAS_ST) {
-		sessionStorages.removeAll(findSessionStorage(CAS_ST));
+	public static void deleteSessionStorage(String CAS_TGC) {
+		
+		sessionStorages.removeAll(findSessionStorage(CAS_TGC));
 
 	}
 
-	public static List<ServiceTicket> findServiceTicket(String CAS_ST) {
+	public static List<ServiceTicket> findServiceTicket(String CAS_TGC) {
 		List<ServiceTicket> list = new ArrayList<>();
 		for (ServiceTicket s : serviceTickets) {
-			if (s.getSt().equals(CAS_ST)) {
+			if (s.getTGC().equals(CAS_TGC)) {
 				list.add(s);
 			}
 		}
 		return list;
 	}
 
-	public static void deleteServiceTicket(String CAS_ST) {
-		serviceTickets.removeAll(findServiceTicket(CAS_ST));
+	public static void deleteServiceTicket(String CAS_TGC) {
+		serviceTickets.removeAll(findServiceTicket(CAS_TGC));
+	}
+
+
+	public static void addTGT(User user,String CAS_ST,String CAS_TGC) {
+		// TODO Auto-generated method stub
+		TGT tgt=new TGT();
+		tgt.setST(CAS_ST);
+		tgt.setUser(user);
+		tgt.setTGC(CAS_TGC);
+		tgts.add(tgt);
+	}
+	
+	public static TGT getTGTByST(String ST) {
+		for (TGT tgt : tgts) {
+			if (tgt.getST().equals(ST)) {
+				return tgt;
+			}
+		}
+		return null;
+	}
+	public static void deleteTGTBySt(String CAS_ST) {
+		// TODO Auto-generated method stub
+		List<TGT> list = new ArrayList<>();
+		for (TGT tgt : tgts) {
+			if (tgt.getST().equals(CAS_ST)) {
+				list.add(tgt);
+			}
+		}
+		tgts.removeAll(list);
 	}
 
 }
+

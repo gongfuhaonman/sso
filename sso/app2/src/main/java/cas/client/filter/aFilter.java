@@ -9,11 +9,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import cas.client.SessionMap;
-import cas.client.Constants;
-import cas.client.*;
+
 /**
  * Servlet Filter implementation class SingleSignOutFilter
  */
@@ -40,14 +38,10 @@ public class aFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest httpRequest=(HttpServletRequest)request;
 		//HttpServletResponse httpResponse=(HttpServletResponse)response;
-		HttpSession session=httpRequest.getSession();
-		System.out.println("F1");
+		//HttpSession session=httpRequest.getSession();
 		String logout=httpRequest.getParameter("logout");
 		if(logout!=null)
 		{
-			System.out.println("logout");
-			//将local——st清空
-			//session.setAttribute(Constants.LOCAL_ST, null);
 			String sessionId=httpRequest.getParameter("sessionId");
 			SessionMap.invalidate(sessionId);
 		}else{

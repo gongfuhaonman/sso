@@ -22,13 +22,13 @@ import domains.User;
  * Servlet Filter implementation class LocalLoginFilter
  */
 //@WebFilter(filterName="F3",urlPatterns="/*")
-public class cFilter extends AbstractLocalLoginFilter implements
+public class LocalLoginFilter extends AbstractLocalLoginFilter implements
 		Filter {
 
 	/**
 	 * @see AbstractLocalLoginFilter#AbstractLocalLoginFilter()
 	 */
-	public cFilter() {
+	public LocalLoginFilter() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -61,7 +61,6 @@ public class cFilter extends AbstractLocalLoginFilter implements
 	@Override
 	protected boolean doLogin(HttpServletRequest request,
 			HttpServletResponse response) {
-		System.out.println("F3");
 		try {
 			HttpSession session = request.getSession();
 			String userId = (String) session
