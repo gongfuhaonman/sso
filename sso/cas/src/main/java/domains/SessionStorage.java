@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 
 public class SessionStorage {
 	private Long id;
-	private String CAS_TGC;
+	private String user_id;
 	private String sessionId;
 	private String localService;
 	private Timestamp created=new Timestamp(System.currentTimeMillis());
@@ -33,11 +33,11 @@ public class SessionStorage {
 	public void setLocalService(String localService) {
 		this.localService = localService;
 	}
-	public String getTGC() {
-		return CAS_TGC;
+	public String getUserID() {
+		return user_id;
 	}
-	public void setTGC(String CAS_TGC) {
-		this.CAS_TGC = CAS_TGC;
+	public void setUserID(String user_id) {
+		this.user_id = user_id;
 	}
 	@Override
 	public int hashCode() {
@@ -45,7 +45,7 @@ public class SessionStorage {
 		int result = 1;
 		result = prime * result
 				+ ((localService == null) ? 0 : localService.hashCode());
-		result = prime * result + ((CAS_TGC == null) ? 0 : CAS_TGC.hashCode());
+		result = prime * result + ((user_id == null) ? 0 : user_id.hashCode());
 		return result;
 	}
 	@Override
@@ -62,12 +62,13 @@ public class SessionStorage {
 				return false;
 		} else if (!localService.equals(other.localService))
 			return false;
-		if (CAS_TGC == null) {
-			if (other.CAS_TGC != null)
+		if (user_id == null) {
+			if (other.user_id != null)
 				return false;
-		} else if (!CAS_TGC.equals(other.CAS_TGC))
+		} else if (!user_id.equals(other.user_id))
 			return false;
 		return true;
 	}
 	
 }
+

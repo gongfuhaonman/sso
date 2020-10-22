@@ -1,23 +1,20 @@
 package database;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import domains.Mapping;
-import domains.ServiceTicket;
+
 import domains.SessionStorage;
-import domains.TGT;
+
 import domains.User;
 
 public class DB {
-	private static Set<ServiceTicket> serviceTickets = new HashSet<>();
 	private static Set<User> users = new HashSet<>();
 	private static Set<SessionStorage> sessionStorages = new HashSet<>();
 	private static Set<Mapping> mappings = new HashSet<>();
-	private static Set<TGT> tgts = new HashSet<>();
 	static {
 		User u1=addUser("01", "0");
 		User u2=addUser("02", "0");
@@ -39,15 +36,17 @@ public class DB {
 
 
 	
-	public static User getUserByTGC(String TGC) {
-		for (ServiceTicket s : serviceTickets) {
-			if (s.getTGC().equals(TGC)) {
-				return s.getUser();
+
+	//鍐呴儴浣跨敤
+	public static User getUser(String id) {
+		for (User u : users) {
+			if (u.getId().equals(id) ) {
+				return u;
 			}
 		}
 		return null;
 	}
-
+	//楠岃瘉浣跨敤
 	public static User findUser(String id, String pwd) {
 		for (User u : users) {
 			if (u.getId().equals(id) && u.getPwd().equals(pwd)) {
@@ -57,17 +56,12 @@ public class DB {
 		return null;
 	}
 
-	public static void addServiceTicket(String CAS_TGC,User user ) {
-		ServiceTicket serviceTicket = new ServiceTicket();
-		serviceTicket.setTGC(CAS_TGC);
-		serviceTicket.setUser(user);
-		serviceTickets.add(serviceTicket);
-	}
-	//tgc瀵瑰簲涓績浼氳瘽Id,sessionid涓篴pp浼氳瘽id
-	public static void addSessionStorage(String LOCAL_SERVICE, String CAS_TGC, String sessionId) {
+
+	//tgc鐎电懓绨叉稉顓炵妇娴兼俺鐦絀d,sessionid娑撶pp娴兼俺鐦絠d
+	public static void addSessionStorage(String LOCAL_SERVICE, String user_id, String sessionId) {
 		SessionStorage sessionStorage = new SessionStorage();
 		sessionStorage.setLocalService(LOCAL_SERVICE);
-		sessionStorage.setTGC(CAS_TGC);
+		sessionStorage.setUserID(user_id);
 		sessionStorage.setSessionId(sessionId);
 		sessionStorages.add(sessionStorage);
 
@@ -93,66 +87,21 @@ public class DB {
 		return null;
 	}
 
-	public static List<SessionStorage> findSessionStorage(String CAS_TGC) {
+	public static List<SessionStorage> findSessionStorage(String user_id) {
 		List<SessionStorage> list = new ArrayList<>();
 		System.out.println(list!=null);
 		for (SessionStorage s : sessionStorages) {
-			System.out.println(s.getTGC());
-			if (s.getTGC().equals(CAS_TGC)) {
+			if (s.getUserID().equals(user_id)) {
 				list.add(s);
 			}
 		}
 		return list;
 	}
 
-	public static void deleteSessionStorage(String CAS_TGC) {
+	public static void deleteSessionStorage(String user_id) {
 		
-		sessionStorages.removeAll(findSessionStorage(CAS_TGC));
+		sessionStorages.removeAll(findSessionStorage(user_id));
 
-	}
-
-	public static List<ServiceTicket> findServiceTicket(String CAS_TGC) {
-		List<ServiceTicket> list = new ArrayList<>();
-		for (ServiceTicket s : serviceTickets) {
-			if (s.getTGC().equals(CAS_TGC)) {
-				list.add(s);
-			}
-		}
-		return list;
-	}
-
-	public static void deleteServiceTicket(String CAS_TGC) {
-		serviceTickets.removeAll(findServiceTicket(CAS_TGC));
-	}
-
-
-	public static void addTGT(User user,String CAS_ST,String CAS_TGC) {
-		// TODO Auto-generated method stub
-		TGT tgt=new TGT();
-		tgt.setST(CAS_ST);
-		tgt.setUser(user);
-		tgt.setTGC(CAS_TGC);
-		tgts.add(tgt);
-	}
-	
-	public static TGT getTGTByST(String ST) {
-		for (TGT tgt : tgts) {
-			if (tgt.getST().equals(ST)) {
-				return tgt;
-			}
-		}
-		return null;
-	}
-	public static void deleteTGTBySt(String CAS_ST) {
-		// TODO Auto-generated method stub
-		List<TGT> list = new ArrayList<>();
-		for (TGT tgt : tgts) {
-			if (tgt.getST().equals(CAS_ST)) {
-				list.add(tgt);
-			}
-		}
-		tgts.removeAll(list);
 	}
 
 }
-

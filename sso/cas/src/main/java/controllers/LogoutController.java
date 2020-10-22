@@ -15,8 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import cas.server.Constants;
+import cas.server.JWTUtils;
 import database.DB;
 import domains.SessionStorage;
+import domains.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 @WebServlet(value="/logout.do")
 public class LogoutController extends HttpServlet {
 
@@ -26,15 +31,19 @@ public class LogoutController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session=request.getSession();
 		session.invalidate();
+		String LOCAL_SERVICE=request.getParameter("LOCAL_SERVICE");
 		Cookie cookies[] = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(Constants.CAS_TGC)) {
-					String CAS_TGC = cookie.getValue();
+				if (cookie.getName().equals(Constants.CAS_ST)) {
+					String CAS_ST = cookie.getValue();
 					cookie.setMaxAge(0);
 					response.addCookie(cookie);
-					List<SessionStorage> list =DB.findSessionStorage(CAS_TGC);
-							
+					Claims claims = JWTUtils.parseJWT(CAS_ST);
+					User user =DB.getUser(claims.getSubject()) ;
+					user =DB.getUser(claims.getSubject()) ;
+					List<SessionStorage> list=null;
+					if(user!=null)  list =DB.findSessionStorage(user.getId());
 					try {
 						for (SessionStorage item : list) {
 							URL url = new URL(item.getLocalService()
@@ -49,8 +58,8 @@ public class LogoutController extends HttpServlet {
 						e.printStackTrace();
 
 					}
-					DB.deleteSessionStorage(CAS_TGC);
-					DB.deleteServiceTicket(CAS_TGC);
+					DB.deleteSessionStorage(user.getId());
+
 				}
 			}
 		}
@@ -58,3 +67,4 @@ public class LogoutController extends HttpServlet {
 	}
 
 }
+

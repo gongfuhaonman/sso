@@ -4,14 +4,20 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cas.server.Constants;
+import cas.server.JWTUtils;
 import database.DB;
 import domains.Mapping;
-import domains.ServiceTicket;
+
 import domains.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 @WebServlet(value="/getUser.do")
 public class GetUserController extends HttpServlet {
 
@@ -24,13 +30,16 @@ public class GetUserController extends HttpServlet {
 		String app=request.getParameter("app");
 		String LOCAL_SERVICE=request.getParameter("LOCAL_SERVICE");
 		String sessionId=request.getParameter("sessionId");
-		String CAS_TGC=DB.getTGTByST(CAS_ST).getTGC();
-		DB.addSessionStorage(LOCAL_SERVICE,CAS_TGC,sessionId);
-		//ServiceTicket st = DB.findServiceTicketbySt(CAS_ST);
-		User user=DB.getTGTByST(CAS_ST).getUser();
+		Claims claims = JWTUtils.parseJWT(CAS_ST);
+		User user =DB.getUser(claims.getSubject()) ;
+		if(user==null) {
+			System.out.println("");
+			return;
+		}	
+		DB.addSessionStorage(LOCAL_SERVICE,user.getId(),sessionId);
+		
 		Mapping mapping = DB.findMappingByHostAndAppAndCasUser(host,app,user);
-		//娓呯┖st,涓�涓猻t鍙兘浣跨敤涓�娆�
-		DB.deleteTGTBySt(CAS_ST);
+		
 		response.getWriter().println(mapping.getLocalUser());
 	}
 

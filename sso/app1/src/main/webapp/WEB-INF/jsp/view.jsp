@@ -10,7 +10,7 @@
 	<p>这是App1</p>
 	id:${user.id } name:${user.name } age:${user.age } email:${user.email }
 	<p>
-		<a href="http://localhost:8080/cas/logout.do">注销</a>
+		<a href="http://localhost:8080/cas/logout.do?LOCAL_SERVICE=http://localhost:8080/app1/view.do">注销</a>
 	</p>
 </body>
 </html>
